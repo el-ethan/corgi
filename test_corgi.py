@@ -1,5 +1,5 @@
 from mock import patch, DEFAULT
-from main import Corgi
+from corgi import Corgi
 
 class TestCogi:
 	
