@@ -1,16 +1,18 @@
 #!/usr/bin/python
-"""corgi: a utility for quick capture of notes and reminders for org mode"""
+"""corgi (Capture ORG Instantly): a utility for quick capture of notes and 
+reminders for org mode.
+"""
 import os
+import psutil
 from kivy.app import App
 from kivy.config import Config
 from kivy.uix.boxlayout import BoxLayout
 from kivy.properties import ObjectProperty
 
-import psutil
 
-sync_file = 'to_sync.txt'
-org_file = 'test_org.org'
-# org_file = '~/Dropbox/org_files/da_guai.org'
+sync_file = '/home/ethan/Dropbox/development/corgi/to_sync.txt'
+org_file = '/home/ethan/Dropbox/org_files/da_guai.org'
+# org_file = 'test_org.org'
 
 
 class Corgi(object):
@@ -39,7 +41,6 @@ class Corgi(object):
 		if len(overlap) == len(self.sync_tasks):
 			return True
 		return False
-		# raise Exception
 		
 	def sync_to_org(self):
 		if not self.running_emacs and self.sync_tasks:
@@ -72,9 +73,10 @@ class CorgiApp(App):
 		Config.set('graphics', 'height', '50')
 		return CaptureBox()
 
+
 if __name__ == '__main__':
 	if not os.path.isfile(sync_file):
-		with open(sync_file, 'w') as f:
+		with open(sync_file, 'w+') as f:
 			f.write('')
 	CorgiApp().run()
 

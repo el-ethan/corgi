@@ -3,6 +3,13 @@
 	orientation: 'horizontal'
 	height: 5
 	
+    canvas.before:
+        Color:
+            rgba: 1, 1, 1, 1
+        Rectangle:
+            pos: self.pos
+            size: self.size
+
 	TextInput:
 		id: task_input
 		size_hint_x: 0.8
@@ -11,7 +18,10 @@
 		font_size: dp(24)
 		on_text_validate: root.on_submit(); app.stop()
 		
-	Button:
-		size_hint_x: 0.2
-		text: 'Capture'
-		
+	AsyncImage:
+		size_hint_x: .08
+		source: 'assets/littlecorgi.png'
+		allow_stretch: True
+		canvas:
+            Color:
+                rgba: (0.2, 0.3, 0.2, 1)
