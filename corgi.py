@@ -4,14 +4,17 @@ reminders for org mode.
 """
 import os
 import psutil
+from ConfigParser import RawConfigParser
 from kivy.app import App
 from kivy.config import Config
 from kivy.uix.boxlayout import BoxLayout
 from kivy.properties import ObjectProperty
 
+config = RawConfigParser()
+config.read('corgi.cfg')
 
-sync_file = '/home/ethan/Dropbox/development/corgi/to_sync.txt'
-org_file = '/home/ethan/Dropbox/org_files/da_guai.org'
+sync_file = config.get('files', 'sync')
+org_file = config.get('files', 'org')
 # org_file = 'test_org.org'
 
 
