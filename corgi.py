@@ -2,10 +2,11 @@
 """corgi (Capture ORG Instantly): a utility for quick capture of notes and 
 reminders for org mode.
 """
-from kivy.logger import Logger
 import os
 import sys
 import psutil
+from kivy.logger import Logger
+from kivy.uix.textinput import TextInput
 from ConfigParser import RawConfigParser
 from kivy.app import App
 from kivy.config import Config
@@ -72,6 +73,24 @@ class CaptureBox(BoxLayout):
 			sf.write('\n' + inp)
 		self.corgi.sync_to_org()
 
+class CaptureInput(TextInput):
+	
+	def keyboard_on_key_down(self, window, keycode, text, modifiers):
+		key, key_str = keycode
+
+		if key == 13 and 'shift' in modifiers:
+			self.parent.on_submit()
+			self.text = ''
+		elif key == 13 and not modifiers:
+			self.parent.on_submit()
+			app.stop()
+		else:
+			super(CaptureInput, self).keyboard_on_key_down(window, 
+			                                                keycode, 
+			                                                text, 
+			                                                modifiers)
+
+
 class CorgiApp(App):
 	
 	def build(self):
@@ -89,5 +108,6 @@ if __name__ == '__main__':
 	if len(sys.argv) > 1 and sys.argv[1] == 'sync':
 		c.sync_to_org(sync_only=True)
 	else:
-		CorgiApp().run()
+		app = CorgiApp()
+		app.run()
 

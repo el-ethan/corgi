@@ -10,13 +10,14 @@
             pos: self.pos
             size: self.size
 
-	TextInput:
+	CaptureInput:
 		id: task_input
+		hint_text: 'Press enter to submit or shift+enter to enter another task'
 		size_hint_x: 0.8
-		multiline: False
+		multiline: True
 		focus: True
 		font_size: dp(24)
-		on_text_validate: root.on_submit(); app.stop()
+#		on_text_validate: root.on_submit(); app.stop()
 		
 	AsyncImage:
 		size_hint_x: .08
