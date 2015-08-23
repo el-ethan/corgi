@@ -1,6 +1,10 @@
 #!/usr/bin/python
-"""corgi (Capture ORG Instantly): a utility for quick capture of notes and 
-reminders for org mode.
+"""corgi (capture org instantly): a utility for quick capture of notes and 
+reminders for org mode. 
+
+If passed the commandline argument 'sync' the ui will not open and tasks will 
+be synced. You can bind this action to an emacs hook to have your tasks sync 
+when before you open your task file in emacs.
 """
 import os
 import sys
@@ -20,6 +24,7 @@ sync_file = config.get('files', 'sync')
 org_file = config.get('files', 'org')
 prefix = '** TODO '
 
+
 class Corgi(object):
 	
 	@property
@@ -29,35 +34,40 @@ class Corgi(object):
 		return False
 	
 	@property
-	def sync_tasks(self):
+	def tasks_to_sync(self):
 		with open(sync_file) as sf:
 			tasks = sf.readlines()
 		return [t.strip() for t in tasks if t.strip() != '']
 	
 	@property
 	def confirm_synced(self):
-		with open(org_file) as of:
-			_of = of.read()
-			synced_tasks = [t for t in self.sync_tasks if t in _of]
-		if sorted(synced_tasks) == sorted(self.sync_tasks):
+		with open(org_file) as org_f:
+			_org_f = org_f.read()
+			synced_tasks = [t for t in self.tasks_to_sync if t in _org_f]
+		if sorted(synced_tasks) == sorted(self.tasks_to_sync):
 			return True
 		return False
 		
 	def sync_to_org(self, sync_only=False):
 		should_sync = True if sync_only or not self.running_emacs else False
-		if should_sync and self.sync_tasks:
+		if should_sync and self.tasks_to_sync:
+			how_many_tasks = len(self.tasks_to_sync)
 			with open(org_file, 'a') as org_f:
-				for task in self.sync_tasks:
+				for task in self.tasks_to_sync:
 					org_f.write(prefix + task + '\n')
 			assert self.confirm_synced
 			with open(sync_file, 'w+') as f:
 				f.write('')
+				f.seek(0)
 				assert not f.read()
-				
-			Logger.info('***** Sync completed *****')
+				Logger.info('Corgi: sync file emptied')
+			
+			Logger.info('Corgi: tasks synced: %s' % how_many_tasks)				
+			Logger.info('Corgi: sync completed')
 			return 
-		reason = 'nothing to sync' if not self.sync_tasks else 'Emacs is running'
-		Logger.warning('Not synced:%s' % reason)		
+		
+		reason = 'nothing to sync' if not self.tasks_to_sync else 'Emacs is running'
+		Logger.warning('Corgi: not synced because %s' % reason)		
 		return
 
 
@@ -73,11 +83,29 @@ class CaptureBox(BoxLayout):
 			sf.write('\n' + inp)
 		self.corgi.sync_to_org()
 
+
 class CaptureInput(TextInput):
 	
 	def keyboard_on_key_down(self, window, keycode, text, modifiers):
 		key, key_str = keycode
-
+		
+		# check if enter (13) and shift are pressed together
+		if key == 13 and 'shift' in modifiers:
+			self.parent.on_submit()
+			self.text = ''
+		
+		# Check if just enter was pressed (since it is a multiline)
+		elif key == 13 and not modifiers:
+			self.parent.on_submit()
+			app.stop()
+		else:
+			super(CaptureInput, self).keyboard_on_key_down(window, 
+			                                                keycode, 
+			                                                text, 
+			                                                modifiers)
+	# 	For compatability with dev version of kivy
+	def _keyboard_on_key_down(self, window, keycode, text, modifiers):
+		key, key_str = keycode
 		if key == 13 and 'shift' in modifiers:
 			self.parent.on_submit()
 			self.text = ''
@@ -85,7 +113,7 @@ class CaptureInput(TextInput):
 			self.parent.on_submit()
 			app.stop()
 		else:
-			super(CaptureInput, self).keyboard_on_key_down(window, 
+			super(CaptureInput, self)._keyboard_on_key_down(window, 
 			                                                keycode, 
 			                                                text, 
 			                                                modifiers)
