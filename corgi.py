@@ -118,9 +118,7 @@ class Corgi(object):
 		today = datetime.now()
 		tomorrow = datetime.now() + timedelta(1)
 		
-		# Gather tasks for today, tomorrow, and those with now deadline
-		# TODO:  Figure out a more efficient way to do this so that everything isn't
-		# checked twice
+		# Gather tasks for today, tomorrow, and those with no deadline
 		tasks = self.org_tasks
 			
 		for task in tasks:
@@ -214,9 +212,9 @@ if __name__ == '__main__':
 	
 	command_arg = sys.argv[1] if len(sys.argv) > 1 else None
 	
-	if command_arg == 'sync':
+	if command_arg == 'orgsync':
 		c.sync_to_org(sync_only=True)
-	elif command_arg == 'taskpaper':
+	elif command_arg == 'taskpapersync':
 		c.sync_to_taskpaper()
 	else:
 		app = CorgiApp()
