@@ -9,6 +9,7 @@ when before you open your task file in emacs.
 import os
 import sys
 import psutil
+from datetime import datetime, timedelta
 from kivy.logger import Logger
 from kivy.uix.textinput import TextInput
 from ConfigParser import RawConfigParser
@@ -16,13 +17,23 @@ from kivy.app import App
 from kivy.config import Config
 from kivy.uix.boxlayout import BoxLayout
 from kivy.properties import ObjectProperty
+import re
 
 config = RawConfigParser()
 config.read('/home/ethan/Dropbox/development/corgi/corgi.cfg')
 
 sync_file = config.get('files', 'sync')
 org_file = config.get('files', 'org')
+taskpaper_file = config.get('files', 'taskpaper')
 prefix = '** TODO '
+time_fmt = config.get('formats', 'time')
+
+class OrgTask:
+	
+	def __init__(self, task, deadline=None, sched=None):
+		self.deadline = deadline
+		self.sched = sched
+		self.task = re.sub(r':(?P<tag>.*):', '@\g<tag>', task)
 
 
 class Corgi(object):
@@ -40,6 +51,33 @@ class Corgi(object):
 		return [t.strip() for t in tasks if t.strip() != '']
 	
 	@property
+	def org_tasks(self):
+		"""Gather all tasks in an org file"""
+		tasks = []
+		with open(org_file) as f:
+			lines = f.readlines()
+	
+		for i, line in enumerate(lines):
+	
+			if "* TODO " in line:
+				clean_task = re.sub(r'\**\sTODO\s', '- ', line)
+				task = OrgTask(clean_task)
+				task.deadline = 'unscheduled'
+				tasks.append(task)
+			
+			if 'DEADLINE: ' in line and "* TODO " in lines[i-1]:
+				deadline_m = re.search(r'\d{4}-\d{2}-\d{2}', line)
+				# Set deadline for previous task (which deadline bleongs to)
+				tasks[-1].deadline = datetime.strptime(deadline_m.group(), time_fmt)
+	
+			if 'SCHEDULED: ' in line and "* TODO " in lines[i-1]:
+				sched_m = re.search(r'\d{4}-\d{2}-\d{2}', line)
+				# Set scheduled date for previous task (which deadline bleongs to)
+				tasks[-1].sched = datetime.strptime(sched_m.group(), time_fmt)
+	
+		return tasks
+		
+	@property
 	def confirm_synced(self):
 		with open(org_file) as org_f:
 			_org_f = org_f.read()
@@ -47,7 +85,7 @@ class Corgi(object):
 		if sorted(synced_tasks) == sorted(self.tasks_to_sync):
 			return True
 		return False
-		
+
 	def sync_to_org(self, sync_only=False):
 		should_sync = True if sync_only or not self.running_emacs else False
 		if should_sync and self.tasks_to_sync:
@@ -70,7 +108,47 @@ class Corgi(object):
 		Logger.warning('Corgi: not synced because %s' % reason)		
 		return
 
-
+	def sync_to_taskpaper(self):
+		"""Add all tasks with deadline today or tomorrow to taskpaper file"""
+		
+		tomorrow_tasks = []
+		today_tasks = []
+		unsched_tasks = []
+		habits = []
+		today = datetime.now()
+		tomorrow = datetime.now() + timedelta(1)
+		
+		# Gather tasks for today, tomorrow, and those with now deadline
+		# TODO:  Figure out a more efficient way to do this so that everything isn't
+		# checked twice
+		tasks = self.org_tasks
+			
+		for task in tasks:
+			if task.sched:
+				habits.append(task)
+			elif task.deadline == 'unscheduled':
+				unsched_tasks.append(task)
+			elif task.deadline.date() == today.date():
+				today_tasks.append(task)
+			elif task.deadline.date() == tomorrow.date():
+				tomorrow_tasks.append(task)
+					
+		f = open(taskpaper_file, 'w')
+	
+		f.write(today.strftime(time_fmt + ', %a') + ':' + '\n\n')
+		for task in today_tasks:
+			f.write(task.task + '\n')
+	
+		f.write(tomorrow.strftime(time_fmt + ', %a') + ':' + '\n\n')
+		for task in tomorrow_tasks:
+			f.write(task.task + '\n')
+	
+		f.write('Unscheduled tasks:\n\n')
+		for task in unsched_tasks:
+			f.write(task.task + '\n')
+	
+		f.close()
+	
 class CaptureBox(BoxLayout):
 	corgi = Corgi()
 	task_input = ObjectProperty()
@@ -133,8 +211,13 @@ if __name__ == '__main__':
 			f.write('')
 	
 	c = Corgi()
-	if len(sys.argv) > 1 and sys.argv[1] == 'sync':
+	
+	command_arg = sys.argv[1] if len(sys.argv) > 1 else None
+	
+	if command_arg == 'sync':
 		c.sync_to_org(sync_only=True)
+	elif command_arg == 'taskpaper':
+		c.sync_to_taskpaper()
 	else:
 		app = CorgiApp()
 		app.run()
