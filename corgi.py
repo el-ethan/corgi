@@ -118,7 +118,6 @@ class Corgi(object):
 		today = datetime.now()
 		tomorrow = datetime.now() + timedelta(1)
 		
-		# Gather tasks for today, tomorrow, and those with no deadline
 		tasks = self.org_tasks
 			
 		for task in tasks:
@@ -130,7 +129,9 @@ class Corgi(object):
 				today_tasks.append(task)
 			elif task.deadline.date() == tomorrow.date():
 				tomorrow_tasks.append(task)
-					
+		
+		how_many = len(tomorrow_tasks + today_tasks + unsched_tasks)
+				
 		f = open(taskpaper_file, 'w')
 	
 		f.write(today.strftime(time_fmt + ', %a') + ':' + '\n\n')
@@ -144,7 +145,10 @@ class Corgi(object):
 		f.write('Unscheduled tasks:\n\n')
 		for task in unsched_tasks:
 			f.write(task.task + '\n')
-	
+		
+		Logger.info('Corgi: tasks synced to taskpaper file: %s' % how_many_tasks)				
+		Logger.info('Corgi: taskpaper sync complete')
+		
 		f.close()
 	
 class CaptureBox(BoxLayout):
