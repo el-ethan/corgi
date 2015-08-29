@@ -146,7 +146,7 @@ class Corgi(object):
 		for task in unsched_tasks:
 			f.write(task.task + '\n')
 		
-		Logger.info('Corgi: tasks synced to taskpaper file: %s' % how_many_tasks)				
+		Logger.info('Corgi: tasks synced to taskpaper file: %s' % how_many)				
 		Logger.info('Corgi: taskpaper sync complete')
 		
 		f.close()
