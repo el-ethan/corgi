@@ -1,11 +1,20 @@
 #!/usr/bin/python
-"""corgi (capture org instantly): a utility for quick capture of notes and 
-reminders for org mode. 
+"""corgi is a simple utility for quick capture to an org-mode file (or any
+text file really), and sync between an org file and mobile devices.
 
-If passed the commandline argument 'sync' the ui will not open and tasks will 
-be synced. You can bind this action to an emacs hook to have your tasks sync 
-when before you open your task file in emacs.
+Command line arguments:
+- taskpapersync
+Sync all tasks for the current day, the following day, or those that are 
+unscheduled to a taskpaper file that can be viewed on a mobile device.
+- orgsync
+Sync all tasks that have accumulated in the sync_file to the org_file
+
+When corgi is run, if Emacs is open it will not save to the org file so as not
+to risk modifying a file that might already have an open buffer that is being 
+worked on. 
 """
+# TODO add documentation about how to sync in emacs
+# TODO fully document and post to github
 import os
 import sys
 import psutil
