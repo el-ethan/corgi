@@ -37,6 +37,7 @@ taskpaper_file = config.get('files', 'taskpaper')
 prefix = '** TODO '
 time_fmt = config.get('formats', 'time')
 
+
 class OrgTask:
 	
 	def __init__(self, task, deadline=None, sched=None):
@@ -124,6 +125,7 @@ class Corgi(object):
 		today_tasks = []
 		unsched_tasks = []
 		habits = []
+		
 		today = datetime.now()
 		tomorrow = datetime.now() + timedelta(1)
 		
@@ -159,6 +161,7 @@ class Corgi(object):
 		Logger.info('Corgi: taskpaper sync complete')
 		
 		f.close()
+
 	
 class CaptureBox(BoxLayout):
 	corgi = Corgi()
@@ -192,7 +195,7 @@ class CaptureInput(TextInput):
 			                                                keycode, 
 			                                                text, 
 			                                                modifiers)
-	# 	For compatability with dev version of kivy
+	# 	For compatibility with dev version of kivy
 	def _keyboard_on_key_down(self, window, keycode, text, modifiers):
 		key, key_str = keycode
 		if key == 13 and 'shift' in modifiers:
