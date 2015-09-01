@@ -2,19 +2,17 @@
 """corgi is a simple utility for quick capture to an org-mode file (or any
 text file really), and sync between an org file and mobile devices.
 
-Command line arguments:
+Command line options:
 - taskpapersync
 Sync all tasks for the current day, the following day, or those that are 
 unscheduled to a taskpaper file that can be viewed on a mobile device.
 - orgsync
 Sync all tasks that have accumulated in the sync_file to the org_file
 
-When corgi is run, if Emacs is open it will not save to the org file so as not
-to risk modifying a file that might already have an open buffer that is being 
-worked on. 
+When tasks are saved with corgi, if Emacs is open it will not save to the org 
+file so as not to risk modifying a file that might already have an open buffer 
+that is being worked on. 
 """
-# TODO add documentation about how to sync in emacs
-# TODO fully document and post to github
 import os
 import sys
 import psutil
@@ -34,15 +32,22 @@ config.read('/home/ethan/Dropbox/development/corgi/corgi.cfg')
 sync_file = config.get('files', 'sync')
 org_file = config.get('files', 'org')
 taskpaper_file = config.get('files', 'taskpaper')
-prefix = '** TODO '
 time_fmt = config.get('formats', 'time')
 
+prefixes = {
+	'level1': '* TODO ',
+	'level2': '** TODO ',
+	'level3': '*** TODO '
+}
 
-class OrgTask:
-	
+default_prefix = prefixes['level2'] 
+
+class CorgiTask:
+	"""A task with a deadline, scheduled date, and a taskpaper-style @tag"""
 	def __init__(self, task, deadline=None, sched=None):
 		self.deadline = deadline
 		self.sched = sched
+		# Replace default org-mode tags with taskpaper ones
 		self.task = re.sub(r':(?P<tag>.*):', '@\g<tag>', task)
 
 
@@ -50,19 +55,21 @@ class Corgi(object):
 	
 	@property
 	def running_emacs(self):
+		"""Check if Emacs is running. Return True if it is, else False"""
 		if 'emacs' in [psutil.Process(p).name() for p in psutil.pids()]:
 			return True
 		return False
 	
 	@property
 	def tasks_to_sync(self):
+		"""Return list of tasks to sync to the org file"""
 		with open(sync_file) as sf:
 			tasks = sf.readlines()
 		return [t.strip() for t in tasks if t.strip() != '']
 	
 	@property
 	def org_tasks(self):
-		"""Gather all tasks in an org file"""
+		"""Return a list of tasks in an org file"""
 		tasks = []
 		with open(org_file) as f:
 			lines = f.readlines()
@@ -71,24 +78,25 @@ class Corgi(object):
 	
 			if "* TODO " in line:
 				clean_task = re.sub(r'\**\sTODO\s', '- ', line)
-				task = OrgTask(clean_task)
+				task = CorgiTask(clean_task)
 				task.deadline = 'unscheduled'
 				tasks.append(task)
 			
 			if 'DEADLINE: ' in line and "* TODO " in lines[i-1]:
 				deadline_m = re.search(r'\d{4}-\d{2}-\d{2}', line)
-				# Set deadline for previous task (which deadline bleongs to)
+				# Set deadline for previous task (which deadline belongs to)
 				tasks[-1].deadline = datetime.strptime(deadline_m.group(), time_fmt)
 	
 			if 'SCHEDULED: ' in line and "* TODO " in lines[i-1]:
 				sched_m = re.search(r'\d{4}-\d{2}-\d{2}', line)
-				# Set scheduled date for previous task (which deadline bleongs to)
+				# Set scheduled date for previous task (which deadline belongs to)
 				tasks[-1].sched = datetime.strptime(sched_m.group(), time_fmt)
 	
 		return tasks
 		
 	@property
 	def confirm_synced(self):
+		"""Confirm that all tasks from sync_file are also in org_file"""
 		with open(org_file) as org_f:
 			_org_f = org_f.read()
 			synced_tasks = [t for t in self.tasks_to_sync if t in _org_f]
@@ -97,12 +105,15 @@ class Corgi(object):
 		return False
 
 	def sync_to_org(self, sync_only=False):
+		"""If conditions are right, copy tasks from sync_file to org_file
+		and remove contents of sync_file afterwards.
+		"""
 		should_sync = True if sync_only or not self.running_emacs else False
 		if should_sync and self.tasks_to_sync:
 			how_many_tasks = len(self.tasks_to_sync)
 			with open(org_file, 'a') as org_f:
 				for task in self.tasks_to_sync:
-					org_f.write(prefix + task + '\n')
+					org_f.write(default_prefix + task + '\n')
 			assert self.confirm_synced
 			with open(sync_file, 'w+') as f:
 				f.write('')
@@ -120,7 +131,6 @@ class Corgi(object):
 
 	def sync_to_taskpaper(self):
 		"""Add all tasks with deadline today or tomorrow to taskpaper file"""
-		
 		tomorrow_tasks = []
 		today_tasks = []
 		unsched_tasks = []
@@ -164,10 +174,12 @@ class Corgi(object):
 
 	
 class CaptureBox(BoxLayout):
+	"""Layout for app"""
 	corgi = Corgi()
 	task_input = ObjectProperty()
 	
 	def on_submit(self):
+		"""Write contents of TextInput to sync_file"""
 		inp = self.task_input.text
 		if not inp:
 			return
@@ -177,8 +189,13 @@ class CaptureBox(BoxLayout):
 
 
 class CaptureInput(TextInput):
+	"""Modified TextInput. Text is submitted on enter and app is stopped. 
+	If enter modified by shift key, text is submitted, and widget is cleared 
+	for the next entry.
+	"""
 	
 	def keyboard_on_key_down(self, window, keycode, text, modifiers):
+		"""Override behaviour to control effect of enter key"""
 		key, key_str = keycode
 		
 		# check if enter (13) and shift are pressed together
