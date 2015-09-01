@@ -42,6 +42,7 @@ prefixes = {
 
 default_prefix = prefixes['level2'] 
 
+
 class CorgiTask:
 	"""A task with a deadline, scheduled date, and a taskpaper-style @tag"""
 	def __init__(self, task, deadline=None, sched=None):
@@ -82,12 +83,12 @@ class Corgi(object):
 				task.deadline = 'unscheduled'
 				tasks.append(task)
 			
-			if 'DEADLINE: ' in line and "* TODO " in lines[i-1]:
+			if 'DEADLINE: ' in line and "* TODO " in lines[i - 1]:
 				deadline_m = re.search(r'\d{4}-\d{2}-\d{2}', line)
 				# Set deadline for previous task (which deadline belongs to)
 				tasks[-1].deadline = datetime.strptime(deadline_m.group(), time_fmt)
 	
-			if 'SCHEDULED: ' in line and "* TODO " in lines[i-1]:
+			if 'SCHEDULED: ' in line and "* TODO " in lines[i - 1]:
 				sched_m = re.search(r'\d{4}-\d{2}-\d{2}', line)
 				# Set scheduled date for previous task (which deadline belongs to)
 				tasks[-1].sched = datetime.strptime(sched_m.group(), time_fmt)
