@@ -215,6 +215,7 @@ class CaptureInput(TextInput):
 			                                                keycode, 
 			                                                text, 
 			                                                modifiers)
+			
 	# 	For compatibility with dev version of kivy
 	def _keyboard_on_key_down(self, window, keycode, text, modifiers):
 		key, key_str = keycode
@@ -247,7 +248,6 @@ if __name__ == '__main__':
 	if len(glob(corgi_dir + 'to_sync*')) > 1:
 		Logger.warning('Corgi: ***MORE THAN ONE SYNC FILE EXISTS, '
 		               'RESOLVE MANUALLY***')
-		
 	
 	if not os.path.isfile(sync_file):
 		with open(sync_file, 'w+') as f:
