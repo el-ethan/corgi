@@ -12,6 +12,8 @@ Sync all tasks that have accumulated in the sync_file to the org_file
 When tasks are saved with corgi, if Emacs is open it will not save to the org 
 file so as not to risk modifying a file that might already have an open buffer 
 that is being worked on. 
+
+image credit: http://cyodee.deviantart.com/art/Pixel-Frida-421834726
 """
 import os
 import sys
@@ -238,6 +240,15 @@ class CorgiApp(App):
 
 
 if __name__ == '__main__':
+	from glob import glob
+	
+	corgi_dir = config.get('paths', 'corgi_home')
+	
+	if len(glob(corgi_dir + 'to_sync*')) > 1:
+		Logger.warning('Corgi: ***MORE THAN ONE SYNC FILE EXISTS, '
+		               'RESOLVE MANUALLY***')
+		
+	
 	if not os.path.isfile(sync_file):
 		with open(sync_file, 'w+') as f:
 			f.write('')
