@@ -17,16 +17,16 @@ image credit: http://cyodee.deviantart.com/art/Pixel-Frida-421834726
 """
 import os
 import sys
+import re
 import psutil
 from datetime import datetime, timedelta
-from kivy.logger import Logger
-from kivy.uix.textinput import TextInput
 from ConfigParser import RawConfigParser
+from kivy.logger import Logger
 from kivy.app import App
 from kivy.config import Config
 from kivy.uix.boxlayout import BoxLayout
 from kivy.properties import ObjectProperty
-import re
+from kmacs import EmacsTextInput
 
 config = RawConfigParser()
 config.read('/home/ethan/Dropbox/development/corgi/corgi.cfg')
@@ -190,33 +190,6 @@ class CaptureBox(BoxLayout):
 			sf.write('\n' + inp)
 		self.corgi.sync_to_org()
 
-
-class EmacsTextInput(TextInput):
-	
-	def backward_kill_word(self):
-
-		# TODO: can I split on multiple characters? re.split, right?		
-		split_on_chars = [' ']
-		
-		words = [w for w in self.text.split(' ') if w]
-		ending = ' ' if len(words) > 1 else ''
-		self.text = ' '.join(words[:-1]) + ending
-		
-	def keyboard_on_key_down(self, window, keycode, text, modifiers):
-		"""Override behaviour to control effect of enter key"""
-		key, key_str = keycode
-		Logger.info('modifier -- key: %s -- %s' % (modifiers, key))
-		
-		# Check if M-BACKSPACE was pressed
-		if key == 8 and 'alt' in modifiers:
-			self.backward_kill_word()
-
-		else:
-			super(EmacsTextInput, self).keyboard_on_key_down(window, 
-			                                                 keycode, 
-			                                                 text, 
-			                                                 modifiers)
-		
 		
 class CaptureInput(EmacsTextInput):
 	"""Modified TextInput. Text is submitted on enter and app is stopped. 
