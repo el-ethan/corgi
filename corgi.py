@@ -201,7 +201,7 @@ class CaptureInput(TextInput):
 	def keyboard_on_key_down(self, window, keycode, text, modifiers):
 		"""Override behaviour to control effect of enter key"""
 		key, key_str = keycode
-		
+		Logger.info('modifier -- key: %s -- %s' % (modifiers, key))
 		# check if enter (13) and shift are pressed together
 		if key == 13 and 'shift' in modifiers:
 			self.parent.on_submit()
