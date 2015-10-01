@@ -24,9 +24,9 @@ from ConfigParser import RawConfigParser
 from kivy.logger import Logger
 from kivy.app import App
 from kivy.config import Config
+from kivy.uix.textinput import TextInput
 from kivy.uix.boxlayout import BoxLayout
 from kivy.properties import ObjectProperty
-from kmacs import EmacsTextInput
 
 config = RawConfigParser()
 config.read('/home/ethan/Dropbox/development/corgi/corgi.cfg')
@@ -191,12 +191,13 @@ class CaptureBox(BoxLayout):
 		self.corgi.sync_to_org()
 
 		
-class CaptureInput(EmacsTextInput):
+class CaptureInput(TextInput):
 	"""Modified TextInput. Text is submitted on enter and app is stopped. 
 	If enter modified by shift key, text is submitted, and widget is cleared 
 	for the next entry.
 	"""
-	
+	# todo change similar to kmacs version where logic doesn't need to be 
+	# repeated
 	def keyboard_on_key_down(self, window, keycode, text, modifiers):
 		"""Override behaviour to control effect of enter key"""
 		key, key_str = keycode
