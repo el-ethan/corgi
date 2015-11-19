@@ -57,11 +57,9 @@ class CorgiTask:
 class Corgi(object):
 
     @property
-    def running_emacs(self):
-        """Check if Emacs is running. Return True if it is, else False"""
-        if 'emacs' in [psutil.Process(p).name() for p in psutil.pids()]:
-            return True
-        return False
+    def running_emacs_count(self):
+        """Count how many instances of Emacs are currently open"""
+        return [psutil.Process(p).name() for p in psutil.pids()].count('emacs')
 
     @property
     def tasks_to_sync(self):
@@ -111,8 +109,9 @@ class Corgi(object):
         """If conditions are right, copy tasks from sync_file to org_file
         and remove contents of sync_file afterwards.
         """
-        should_sync = True if sync_only or not self.running_emacs else False
-        if should_sync and self.tasks_to_sync:
+        sync_while_running = sync_only and self.running_emacs_count <= 1
+        sync_while_closed = not self.running_emacs_count
+        if (sync_while_running or sync_while_closed) and self.tasks_to_sync:
             how_many_tasks = len(self.tasks_to_sync)
             with open(org_file, 'a') as org_f:
                 for task in self.tasks_to_sync:
