@@ -26,6 +26,7 @@ from kivy.app import App
 from kivy.config import Config
 from kivy.uix.textinput import TextInput
 from kivy.uix.boxlayout import BoxLayout
+from kivy.uix.behaviors.emacs import EmacsBehavior
 from kivy.properties import ObjectProperty
 
 config = RawConfigParser()
@@ -190,7 +191,7 @@ class CaptureBox(BoxLayout):
         self.corgi.sync_to_org()
 
 
-class CaptureInput(TextInput):
+class CaptureInput(EmacsBehavior, TextInput):
     """Modified TextInput. Text is submitted on enter and app is stopped.
     If enter modified by shift key, text is submitted, and widget is cleared
     for the next entry.
@@ -200,9 +201,8 @@ class CaptureInput(TextInput):
     def keyboard_on_key_down(self, window, keycode, text, modifiers):
         """Override behaviour to control effect of enter key"""
         key, key_str = keycode
-        Logger.debug('modifier -- key: %s -- %s' % (modifiers, key))
-        Logger.debug('cursor index: %s' % (self.cursor_index()))
-
+        Logger.info('modifier -- key: %s -- %s' % (modifiers, key))
+        Logger.info('cursor index: %s' % (self.cursor_index()))
         # check if enter (13) and shift are pressed together
         if key == 13 and 'shift' in modifiers:
             self.parent.on_submit()
@@ -218,20 +218,20 @@ class CaptureInput(TextInput):
                                                             text,
                                                             modifiers)
 
-    #   For compatibility with dev version of kivy
-    def _keyboard_on_key_down(self, window, keycode, text, modifiers):
-        key, key_str = keycode
-        if key == 13 and 'shift' in modifiers:
-            self.parent.on_submit()
-            self.text = ''
-        elif key == 13 and not modifiers:
-            self.parent.on_submit()
-            app.stop()
-        else:
-            super(CaptureInput, self)._keyboard_on_key_down(window,
-                                                            keycode,
-                                                            text,
-                                                            modifiers)
+    # #   For compatibility with dev version of kivy
+    # def _keyboard_on_key_down(self, window, keycode, text, modifiers):
+    #     key, key_str = keycode
+    #     if key == 13 and 'shift' in modifiers:
+    #         self.parent.on_submit()
+    #         self.text = ''
+    #     elif key == 13 and not modifiers:
+    #         self.parent.on_submit()
+    #         app.stop()
+    #     else:
+    #         super(CaptureInput, self)._keyboard_on_key_down(window,
+    #                                                         keycode,
+    #                                                         text,
+    #                                                         modifiers)
 
 
 class CorgiApp(App):
