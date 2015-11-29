@@ -32,10 +32,15 @@ from kivy.properties import ObjectProperty
 config = RawConfigParser()
 config.read('/home/ethan/Dropbox/development/corgi/corgi.cfg')
 
+# This is where tasks are initially added from mobile and corgi capture
 sync_file = config.get('files', 'sync')
+# This is the file tasks are synced to and from from
 org_file = config.get('files', 'org')
+# This is the file where mobile tasks show up
 taskpaper_file = config.get('files', 'taskpaper')
 time_fmt = config.get('formats', 'time')
+# Any tags in this list will not show up in mobile task list
+filter_tags = config.get('tags', 'ignore').split(',')
 
 prefixes = {
     'level1': '* TODO ',
@@ -46,14 +51,15 @@ prefixes = {
 default_prefix = prefixes['level2']
 
 
-class CorgiTask:
+class CorgiTask(object):
     """A task with a deadline, scheduled date, and a taskpaper-style @tag"""
     def __init__(self, task, deadline=None, sched=None):
         self.deadline = deadline
         self.sched = sched
         # Replace default org-mode tags with taskpaper ones
-        self.task = re.sub(r':(?P<tag>.*):', '@\g<tag>', task)
-
+        tags_and_task = task.split(':')[::-1]
+        self.task = tags_and_task.pop()
+        self.tags = ['@' + t.strip() for t in tags_and_task if t.strip() != '']
 
 class Corgi(object):
 
@@ -144,7 +150,10 @@ class Corgi(object):
 
         tasks = self.org_tasks
 
+
         for task in tasks:
+            if set(task.tags) & set(filter_tags):
+                continue
             if task.sched:
                 habits.append(task)
             elif task.deadline == 'unscheduled':
@@ -160,15 +169,15 @@ class Corgi(object):
 
         f.write(today.strftime(time_fmt + ', %a') + ':' + '\n\n')
         for task in today_tasks:
-            f.write(task.task + '\n')
+            f.write(task.task + '\t' + ' '.join(task.tags) + '\n')
 
         f.write(tomorrow.strftime(time_fmt + ', %a') + ':' + '\n\n')
         for task in tomorrow_tasks:
-            f.write(task.task + '\n')
+            f.write(task.task + '\t' + ' '.join(task.tags) + '\n')
 
         f.write('Unscheduled tasks:\n\n')
         for task in unsched_tasks:
-            f.write(task.task + '\n')
+            f.write(task.task + '\t' + ' '.join(task.tags) + '\n')
 
         Logger.info('Corgi: tasks synced to taskpaper file: %s' % how_many)
         Logger.info('Corgi: taskpaper sync complete')
@@ -217,21 +226,6 @@ class CaptureInput(EmacsBehavior, TextInput):
                                                             keycode,
                                                             text,
                                                             modifiers)
-
-    # #   For compatibility with dev version of kivy
-    # def _keyboard_on_key_down(self, window, keycode, text, modifiers):
-    #     key, key_str = keycode
-    #     if key == 13 and 'shift' in modifiers:
-    #         self.parent.on_submit()
-    #         self.text = ''
-    #     elif key == 13 and not modifiers:
-    #         self.parent.on_submit()
-    #         app.stop()
-    #     else:
-    #         super(CaptureInput, self)._keyboard_on_key_down(window,
-    #                                                         keycode,
-    #                                                         text,
-    #                                                         modifiers)
 
 
 class CorgiApp(App):
