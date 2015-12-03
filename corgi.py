@@ -61,6 +61,7 @@ class CorgiTask(object):
         self.task = tags_and_task.pop()
         self.tags = ['@' + t.strip() for t in tags_and_task if t.strip() != '']
 
+
 class Corgi(object):
 
     @property
