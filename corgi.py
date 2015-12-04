@@ -16,18 +16,19 @@ that is being worked on.
 image credit: http://cyodee.deviantart.com/art/Pixel-Frida-421834726
 """
 import os
-import sys
 import re
+import sys
 import psutil
-from datetime import datetime, timedelta
 from ConfigParser import RawConfigParser
-from kivy.logger import Logger
+from datetime import datetime, timedelta
+
 from kivy.app import App
 from kivy.config import Config
-from kivy.uix.textinput import TextInput
-from kivy.uix.boxlayout import BoxLayout
-from kivy.uix.behaviors.emacs import EmacsBehavior
+from kivy.logger import Logger
 from kivy.properties import ObjectProperty
+from kivy.uix.behaviors import EmacsBehavior, CodeNavigationBehavior
+from kivy.uix.boxlayout import BoxLayout
+from kivy.uix.textinput import TextInput
 
 config = RawConfigParser()
 config.read('/home/ethan/Dropbox/development/corgi/corgi.cfg')
@@ -201,7 +202,7 @@ class CaptureBox(BoxLayout):
         self.corgi.sync_to_org()
 
 
-class CaptureInput(EmacsBehavior, TextInput):
+class CaptureInput(EmacsBehavior, CodeNavigationBehavior, TextInput):
     """Modified TextInput. Text is submitted on enter and app is stopped.
     If enter modified by shift key, text is submitted, and widget is cleared
     for the next entry.
