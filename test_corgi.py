@@ -1,5 +1,5 @@
 from datetime import datetime
-from parser import org_timestamp_to_dt
+from org_parse import org_timestamp_to_dt
 
 
 class TestParser(object):
