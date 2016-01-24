@@ -1,8 +1,9 @@
+#!/usr/bin/python
+
 import os
 from datetime import datetime, timedelta
 from glob import glob
-# todo run from cron
-# todo log output
+
 
 def cleanup_scratch_files():
     files = glob('/home/ethan/Dropbox/org_files/xscratch*.org')
