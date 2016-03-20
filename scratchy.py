@@ -9,7 +9,6 @@ def cleanup_scratch_files():
     files = glob('/home/ethan/Dropbox/org_files/xscratch*.org')
     now = datetime.now()
     _delta = timedelta(days=7)
-    file_count = len(files)
     delete_count = 0
     for f in files[:]:
 
