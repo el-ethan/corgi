@@ -27,7 +27,6 @@ def cleanup_scratch_files():
     print 'removed %s' % delete_count
 
     with open('/home/ethan/scratchy.log', 'a') as f:
-        remaining = file_count - delete_count
         f.write('Last run: %s\nFiles removed: %d'
                 '\nFiles remaining: %d\n\n' % (now, delete_count, remain_count))
 
