@@ -1,7 +1,7 @@
 from ConfigParser import RawConfigParser
 
 config = RawConfigParser()
-config.read('/home/ethan/Dropbox/development/corgi/corgi.cfg')
+config.read('/home/ethan/Dropbox/development/corgi/.corgi')
 
 time_fmt = config.get('formats', 'time')
 
