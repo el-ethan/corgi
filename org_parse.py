@@ -5,6 +5,7 @@ from datetime import datetime
 
 from corgi import CorgiTask, time_fmt
 
+org_date_fmt = '%Y-%m-%d'
 
 def get_org_tasks(filepath):
     """Return a list of tasks in an org file"""
@@ -34,9 +35,8 @@ def get_org_tasks(filepath):
 
 
 def org_timestamp_to_dt(tstamp):
-    """Return a datetime object from a org-mode timestamp string"""
+    """Accepts an org-mode timestamp and returns a datetime object"""
 
-    org_date_fmt = ('%Y-%m-%d')
     _date, _, _time = tstamp.strip('<>').split(' ')
     _time = _time.split(':')
 
@@ -44,3 +44,15 @@ def org_timestamp_to_dt(tstamp):
     dt = dt.replace(hour=int(_time[0]), minute=int(_time[1]))
 
     return dt
+
+def dt_to_org_timestamp(dt, show_time=False, zero_padded=False):
+    """Accepts a datetime object and returns a string org-mode timestamp"""
+
+    _hour = '%-H' if not zero_padded else '%H'
+
+    fmt = org_date_fmt + ' %a'
+    if show_time:
+        fmt += ' {}:%M'.format(_hour)
+
+    date = dt.strftime(fmt)
+    return '<' + date + '>'
