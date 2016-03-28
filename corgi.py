@@ -65,7 +65,10 @@ class CorgiTask(object):
 
     @property
     def taskpaper_task(self):
-        return '- {0} {1}\n'.format(self.task, ' '.join(self.tags))
+        task = '- %s' % self.task
+        tags = (' ' + ' '.join(self.tags)) if self.tags else ''
+
+        return task + tags + '\n'
 
 
 class CorgiCapture(object):

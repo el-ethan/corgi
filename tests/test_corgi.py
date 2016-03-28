@@ -1,8 +1,6 @@
 import os
 from glob import glob
-
-from datetime import datetime
-
+from datetime import datetime, timedelta
 import pytest
 
 from corgi.org_parse import org_timestamp_to_dt, get_org_tasks, dt_to_org_timestamp
@@ -11,11 +9,14 @@ from corgi.sync import sync_to_taskpaper
 
 ORG_FILE_CONTENT = '''
     * TODO task
-    * TODO task with deadline
-      DEADLINE: <2016-03-31 Thu +1w>
+    * TODO task for today
+      DEADLINE: %s
+    * TODO task for tomorrow
+      DEADLINE: %s
     * TODO task with "home" tag        :home:
     * TODO task with "work" tag        :work:
-    '''
+    ''' % (dt_to_org_timestamp(datetime.now()),
+           dt_to_org_timestamp(datetime.now() + timedelta(1)))
 
 def task_in_file(task, filename):
     with open(filename) as f:
@@ -79,5 +80,6 @@ class TestSyncToTaskpaper(object):
         for path in files:
             assert os.path.exists(path)
 
-        assert task_in_file('- task for today \n', files[0])
-        assert task_in_file('- task for tomorrow \n', files[1])
+        assert task_in_file('- task for today\n', files[0])
+
+        assert task_in_file('- task for tomorrow\n', files[1])

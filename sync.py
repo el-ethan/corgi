@@ -32,7 +32,7 @@ def sync_to_taskpaper(tasks):
         elif task.deadline.date() == today.date():
             tasks_dict['today'].append(task)
         elif task.deadline.date() == tomorrow.date():
-            tasks['tomorrow'].append(task)
+            tasks_dict['tomorrow'].append(task)
 
         if task.tags:
             for tag in task.tags:
@@ -43,7 +43,7 @@ def sync_to_taskpaper(tasks):
         with open('%s.taskpaper' % day, 'w') as f:
             f.write(dt.strftime(time_fmt + ', %a') + ':' + '\n\n')
             for task in tasks_dict[day]:
-                f.write(task.task + '\t' + ' '.join(task.tags) + '\n')
+                f.write(task.taskpaper_task)
 
     # with open('u')
     # for task in unsched_tasks:
