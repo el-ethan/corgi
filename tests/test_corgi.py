@@ -1,11 +1,9 @@
 import os
 from glob import glob
 from datetime import datetime, timedelta
-from mock import patch
 import pytest
 
 from corgi.parse import org_timestamp_to_dt, get_org_tasks, dt_to_org_timestamp, org_to_taskpaper
-from corgi.config import corgi_home
 
 ORG_FILE_CONTENT = '''
     * TODO task
