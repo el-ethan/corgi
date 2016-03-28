@@ -1,21 +1,27 @@
 import os
 from glob import glob
 from datetime import datetime, timedelta
+from mock import patch
 import pytest
 
-from corgi.org_parse import org_timestamp_to_dt, get_org_tasks, dt_to_org_timestamp
-from corgi.sync import sync_to_taskpaper
-
+from corgi.parse import org_timestamp_to_dt, get_org_tasks, dt_to_org_timestamp, org_to_taskpaper
+from corgi.config import corgi_home
 
 ORG_FILE_CONTENT = '''
     * TODO task
+    ** TODO a subtask
     * TODO task for today
+      DEADLINE: %s
+    * TODO another task for today
       DEADLINE: %s
     * TODO task for tomorrow
       DEADLINE: %s
-    * TODO task with "home" tag        :home:
-    * TODO task with "work" tag        :work:
+    * TODO task with "home" tag          :home:
+    * TODO another task with "home" tag  :home:
+    * TODO task with "work" tag          :work:
+    * TODO task with "work" and "phone" tags :work:phone:
     ''' % (dt_to_org_timestamp(datetime.now()),
+           dt_to_org_timestamp(datetime.now()),
            dt_to_org_timestamp(datetime.now() + timedelta(1)))
 
 def task_in_file(task, filename):
@@ -57,29 +63,33 @@ class TestParser(object):
         dt = datetime(2013, 10, 6, 1, 18)
         assert dt_to_org_timestamp(dt, show_time=True) == expected_org_timestamp
 
+
 @pytest.mark.usefixtures('test_tasks')
-class TestSyncToTaskpaper(object):
+class TestOrgToTaskpaper(object):
 
     def test_files_created_by_tag(self, test_tasks):
         files = ('@work.taskpaper', '@home.taskpaper')
 
         for path in files:
             assert not os.path.exists(path)
-        
-        sync_to_taskpaper(test_tasks)
+
+        org_to_taskpaper(test_tasks, taskpaper_dir='./')
 
         for path in files:
             assert os.path.exists(path)
 
         assert task_in_file('- task with "work" tag @work\n', files[0])
         assert task_in_file('- task with "home" tag @home\n', files[1])
+        assert task_in_file('- another task with "home" tag @home\n', files[1])
+        assert task_in_file('- task with "work" and "phone" tags @phone @work\n', files[0])
 
     def test_today_and_tomorrow_file(self, test_tasks):
         files = ('today.taskpaper', 'tomorrow.taskpaper')
-        sync_to_taskpaper(test_tasks)
+
+        org_to_taskpaper(test_tasks, taskpaper_dir='./')
         for path in files:
             assert os.path.exists(path)
 
         assert task_in_file('- task for today\n', files[0])
-
+        assert task_in_file('- another task for today\n', files[0])
         assert task_in_file('- task for tomorrow\n', files[1])

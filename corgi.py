@@ -16,10 +16,8 @@ that is being worked on.
 image credit: http://cyodee.deviantart.com/art/Pixel-Frida-421834726
 """
 import os
-import re
 import sys
 import psutil
-from ConfigParser import RawConfigParser
 from datetime import datetime, timedelta
 
 from kivy.app import App
@@ -30,46 +28,8 @@ from kivy.uix.behaviors import EmacsBehavior, CodeNavigationBehavior
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.textinput import TextInput
 
-config = RawConfigParser()
-config.read('/home/ethan/Dropbox/development/corgi/corgi.cfg')
-
-# This is where tasks are initially added from mobile and corgi capture
-sync_file = config.get('files', 'sync')
-# This is the file tasks are synced to and from from
-org_file = config.get('files', 'org')
-# This is the file where mobile tasks show up
-taskpaper_file = config.get('files', 'taskpaper')
-time_fmt = config.get('formats', 'time')
-# Any tags in this list will not show up in mobile task list
-filter_tags = config.get('tags', 'ignore').split(',')
-
-prefixes = {
-    'level1': '* TODO ',
-    'level2': '** TODO ',
-    'level3': '*** TODO '
-}
-
-default_prefix = prefixes['level2']
-
-
-class CorgiTask(object):
-    """A task with a deadline, scheduled date, and a taskpaper-style @tag"""
-    def __init__(self, task, deadline=None, sched=None):
-        self.deadline = deadline
-        self.sched = sched
-        # Replace default org-mode tags with taskpaper ones
-        tags_and_task = task.split(':')[::-1]
-        self.task = tags_and_task.pop().strip()
-
-        self.tags = ['@' + t.strip() for t in tags_and_task if t.strip() != '']
-
-    @property
-    def taskpaper_task(self):
-        task = '- %s' % self.task
-        tags = (' ' + ' '.join(self.tags)) if self.tags else ''
-
-        return task + tags + '\n'
-
+from parse import get_org_tasks, org_to_taskpaper
+from config import corgi_home, sync_file, org_file, default_prefix
 
 class CorgiCapture(object):
 
@@ -175,14 +135,12 @@ class CorgiApp(App):
 if __name__ == '__main__':
     from glob import glob
 
-    corgi_dir = config.get('paths', 'corgi_home')
-
-    if len(glob(corgi_dir + 'to_sync*')) > 1:
+    if len(glob(corgi_home + 'to_sync*')) > 1:
         Logger.warning('CorgiCapture: ***MORE THAN ONE SYNC FILE EXISTS, '
                        'RESOLVE MANUALLY***')
 
     if not os.path.isfile(sync_file):
-        with open(sync_file, 'w+') as f:
+        with open(sync_file, 'w') as f:
             f.write('')
 
     c = CorgiCapture()
@@ -192,7 +150,9 @@ if __name__ == '__main__':
     if command_arg == 'orgsync':
         c.sync_to_org(sync_only=True)
     elif command_arg == 'taskpapersync':
-        c.sync_to_taskpaper()
+        tasks = get_org_tasks(org_file)
+        org_to_taskpaper(tasks)
+
     else:
         app = CorgiApp()
         app.run()

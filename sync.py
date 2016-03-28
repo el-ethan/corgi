@@ -7,8 +7,7 @@ from datetime import datetime, timedelta
 from collections import defaultdict
 
 from kivy.logger import Logger
-
-from corgi import time_fmt, filter_tags
+from config import *
 
 
 def sync_to_taskpaper(tasks):
