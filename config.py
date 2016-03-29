@@ -1,7 +1,11 @@
+import os
 from ConfigParser import RawConfigParser
 
 config = RawConfigParser()
-config.read('/home/ethan/Dropbox/development/corgi/.corgi')
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+config.read(BASE_DIR + '/.corgi')
 
 time_fmt = config.get('formats', 'time')
 
