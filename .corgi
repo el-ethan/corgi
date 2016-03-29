@@ -16,4 +16,4 @@ time = %Y-%m-%d
 
 [tags]
 
-ignore = @emacs,@someday
+ignore = @ignore,@hold

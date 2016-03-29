@@ -4,8 +4,9 @@ text file really), and sync between an org file and mobile devices.
 
 Command line options:
 - taskpapersync
-Sync all tasks for the current day, the following day, or those that are
-unscheduled to a taskpaper file that can be viewed on a mobile device.
+All tasks scheduled for today or tomorrow get written to `today.taskpaper` and
+`tomorrow.taskpaper` respectively, and all tasks with tags will be written to a
+file named based on the pattern `@TAG.taskpaper`
 - orgsync
 Sync all tasks that have accumulated in the sync_file to the org_file
 
@@ -18,7 +19,6 @@ image credit: http://cyodee.deviantart.com/art/Pixel-Frida-421834726
 import os
 import sys
 import psutil
-from datetime import datetime, timedelta
 
 from kivy.app import App
 from kivy.config import Config
@@ -30,6 +30,7 @@ from kivy.uix.textinput import TextInput
 
 from parse import get_org_tasks, org_to_taskpaper
 from config import corgi_home, sync_file, org_file, default_prefix
+
 
 class CorgiCapture(object):
 
@@ -80,7 +81,6 @@ class CorgiCapture(object):
         reason = 'nothing to sync' if not self.tasks_to_send else 'Emacs is running'
         Logger.warning('CorgiCapture: not synced because %s' % reason)
         return
-
 
 
 class CaptureBox(BoxLayout):
@@ -153,6 +153,9 @@ if __name__ == '__main__':
         tasks = get_org_tasks(org_file)
         org_to_taskpaper(tasks)
 
-    else:
+    elif not command_arg:
         app = CorgiApp()
         app.run()
+
+    else:
+        Logger.warning('Command arg %s not recognized', command_arg)
