@@ -1,9 +1,9 @@
 (defvar corgi-org-file-path
     (shell-command-to-string "python -c \"from config import org_file; print org_file\"")
-    "Path to org-file retrieved from python config file")
+    "Path to org file retrieved from python config file")
 
 (defvar corgi-org-file (file-name-nondirectory corgi-org-file-path)
-    "Name of org-file")
+    "Name of org file")
 
 (defun corgi-sync-to-taskpaper ()
   "Sync org file to taskpaper file for mobile access"

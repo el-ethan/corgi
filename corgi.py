@@ -60,9 +60,8 @@ class CorgiCapture(object):
         """If conditions are right, copy tasks from sync_file to org_file
         and remove contents of sync_file afterwards.
         """
-        sync_while_running = sync_only and self.running_emacs_count <= 1
-        sync_while_closed = not self.running_emacs_count
-        if (sync_while_running or sync_while_closed) and self.tasks_to_send:
+
+        if self.tasks_to_send and self.running_emacs_count <= 1:
             how_many_tasks = len(self.tasks_to_send)
             with open(org_file, 'a') as org_f:
                 for task in self.tasks_to_send:
@@ -79,7 +78,7 @@ class CorgiCapture(object):
             return
 
         reason = ('nothing to sync' if not self.tasks_to_send
-                  else 'Emacs is running')
+                  else 'Multiple instances of Emacs are running')
 
         Logger.warning('CorgiCapture: not synced because %s' % reason)
         return
