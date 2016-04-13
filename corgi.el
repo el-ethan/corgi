@@ -8,10 +8,10 @@
 (defun corgi-sync-to-taskpaper ()
   "Sync org file to taskpaper file for mobile access"
   (when (file-equal-p buffer-file-name corgi-org-file-path)
-    (shell-command "./corgi.sh taskpapersync")))
+    (shell-command "./runcorgi.sh taskpapersync")))
 
 (defun corgi-sync-to-org-command ()
-    (message (shell-command-to-string "./corgi.sh orgsync")))
+    (message (shell-command-to-string "./runcorgi.sh orgsync")))
 
 (defun corgi-sync-to-org-initially ()
   "Sync org file with to_sync.txt from corgi capture and mobile capture"

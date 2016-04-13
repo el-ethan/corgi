@@ -12,6 +12,7 @@ from config import time_fmt, filter_tags, corgi_home
 
 org_date_fmt = '%Y-%m-%d'
 
+
 def get_org_tasks(filepath):
     """Return a list of tasks in an org file"""
     tasks = []
@@ -50,6 +51,7 @@ def org_timestamp_to_dt(tstamp):
 
     return dt
 
+
 def dt_to_org_timestamp(dt, show_time=False, zero_padded=False):
     """Accepts a datetime object and returns a string org-mode timestamp"""
 
@@ -61,6 +63,7 @@ def dt_to_org_timestamp(dt, show_time=False, zero_padded=False):
 
     date = dt.strftime(fmt)
     return '<' + date + '>'
+
 
 def org_to_taskpaper(tasks, taskpaper_dir=None):
     """Add all tasks with deadline today or tomorrow to taskpaper file"""
@@ -102,10 +105,6 @@ def org_to_taskpaper(tasks, taskpaper_dir=None):
             f.write(dt.strftime(time_fmt + ', %a') + ':' + '\n\n')
             for task in tasks_dict[day]:
                 f.write(task.taskpaper_task)
-
-    # with open('u')
-    # for task in unsched_tasks:
-    #     f.write(task.task + '\t' + ' '.join(task.tags) + '\n')
 
     Logger.info('CorgiCapture: tasks synced to taskpaper file: %s' % how_many)
     Logger.info('CorgiCapture: taskpaper sync complete')
