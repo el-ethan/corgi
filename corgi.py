@@ -78,7 +78,9 @@ class CorgiCapture(object):
             Logger.info('CorgiCapture: sync completed')
             return
 
-        reason = 'nothing to sync' if not self.tasks_to_send else 'Emacs is running'
+        reason = ('nothing to sync' if not self.tasks_to_send
+                  else 'Emacs is running')
+
         Logger.warning('CorgiCapture: not synced because %s' % reason)
         return
 
@@ -118,10 +120,9 @@ class CaptureInput(EmacsBehavior, CodeNavigationBehavior, TextInput):
             self.parent.on_submit()
             app.stop()
         else:
-            super(CaptureInput, self).keyboard_on_key_down(window,
-                                                            keycode,
-                                                            text,
-                                                            modifiers)
+            super(CaptureInput, self).keyboard_on_key_down(
+                window, keycode, text, modifiers
+            )
 
 
 class CorgiApp(App):
