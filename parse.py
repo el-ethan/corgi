@@ -10,8 +10,6 @@ from kivy.logger import Logger
 from task import CorgiTask
 from config import time_fmt, filter_tags, corgi_home
 
-org_date_fmt = '%Y-%m-%d'
-
 
 def get_org_tasks(filepath):
     """Return a list of tasks in an org file"""
@@ -45,7 +43,7 @@ def org_timestamp_to_dt(tstamp):
     tstamp_components = tstamp.strip('<>').split(' ')
 
     _date = tstamp_components[0]
-    dt = datetime.strptime(_date, org_date_fmt)
+    dt = datetime.strptime(_date, time_fmt)
 
     if len(tstamp_components) >= 3 and ':' in tstamp:
         _time = tstamp_components[2].split(':')
@@ -59,7 +57,7 @@ def dt_to_org_timestamp(dt, show_time=False, zero_padded=False):
 
     _hour = '%-H' if not zero_padded else '%H'
 
-    fmt = org_date_fmt + ' %a'
+    fmt = time_fmt + ' %a'
     if show_time:
         fmt += ' {}:%M'.format(_hour)
 
