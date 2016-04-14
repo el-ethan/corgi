@@ -1,9 +1,8 @@
 
 #!/bin/bash
 
-KIVYPATH="/home/ethan/Dropbox/development/kivy_fork" 
+KIVYPATH="/home/ethan/Dropbox/development/kivy_fork/kivy"
 
-export PYTHONPATH="$PYTHONPATH:$KIVYPATH/kivy"
-export KIVY_HOME="$KIVYPATH/.kivy"
+export PYTHONPATH="$PYTHONPATH:$KIVYPATH"
 
 python ~/Dropbox/development/corgi/corgi.py $1
