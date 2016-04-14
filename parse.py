@@ -42,12 +42,14 @@ def get_org_tasks(filepath):
 
 def org_timestamp_to_dt(tstamp):
     """Accepts an org-mode timestamp and returns a datetime object"""
+    tstamp_components = tstamp.strip('<>').split(' ')
 
-    _date, _, _time = tstamp.strip('<>').split(' ')
-    _time = _time.split(':')
-
+    _date = tstamp_components[0]
     dt = datetime.strptime(_date, org_date_fmt)
-    dt = dt.replace(hour=int(_time[0]), minute=int(_time[1]))
+
+    if len(tstamp_components) >= 3 and ':' in tstamp:
+        _time = tstamp_components[2].split(':')
+        dt = dt.replace(hour=int(_time[0]), minute=int(_time[1]))
 
     return dt
 

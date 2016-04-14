@@ -3,7 +3,8 @@ from glob import glob
 from datetime import datetime, timedelta
 import pytest
 
-from corgi.parse import org_timestamp_to_dt, get_org_tasks, dt_to_org_timestamp, org_to_taskpaper
+from corgi.parse import org_timestamp_to_dt, get_org_tasks, \
+    dt_to_org_timestamp, org_to_taskpaper
 
 ORG_FILE_CONTENT = '''
     * TODO task
@@ -22,11 +23,13 @@ ORG_FILE_CONTENT = '''
            dt_to_org_timestamp(datetime.now()),
            dt_to_org_timestamp(datetime.now() + timedelta(1)))
 
+
 def task_in_file(task, filename):
     with open(filename) as f:
         task_list = f.readlines()
 
     return task in task_list
+
 
 @pytest.fixture(scope='function')
 def test_tasks(request):
@@ -54,6 +57,25 @@ class TestParser(object):
     def test_org_timestamp_to_dt(self):
         org_timestamp = '<2013-10-06 Sun 1:18>'
         expected_dt = datetime(2013, 10, 6, 1, 18)
+        assert org_timestamp_to_dt(org_timestamp) == expected_dt
+
+    def test_org_timestamp_to_dt_without_time(self):
+        org_timestamp = '<2013-10-06 Sun>'
+        expected_dt = datetime(2013, 10, 6, 0, 0)
+        assert org_timestamp_to_dt(org_timestamp) == expected_dt
+
+    def test_org_timestamp_to_dt_with_time_and_repeater(self):
+        org_timestamp = '<2013-10-06 Sun 1:18 +1d>'
+        expected_dt = datetime(2013, 10, 6, 1, 18)
+        assert org_timestamp_to_dt(org_timestamp) == expected_dt
+
+    def test_org_timestamp_to_dt_with_repeater(self):
+        org_timestamp = '<2013-10-06 Sun .+1w>'
+        expected_dt = datetime(2013, 10, 6, 0, 0)
+        assert org_timestamp_to_dt(org_timestamp) == expected_dt
+
+        org_timestamp = '<2013-10-06 Sun +1m>'
+        expected_dt = datetime(2013, 10, 6, 0, 0)
         assert org_timestamp_to_dt(org_timestamp) == expected_dt
 
     def test_dt_to_org_timestamp(self):
