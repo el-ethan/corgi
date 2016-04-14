@@ -14,7 +14,7 @@ filter_tags = config.get('tags', 'ignore').split(',')
 
 # This is the file tasks are synced to and from from
 org_file = config.get('paths', 'org_file')
-
+org_dir = config.get('paths', 'org_dir')
 corgi_home = config.get('paths', 'corgi_home')
 
 # This is where tasks are initially added from mobile and corgi capture

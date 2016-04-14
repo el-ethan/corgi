@@ -4,9 +4,11 @@ import os
 from datetime import datetime, timedelta
 from glob import glob
 
+from config import org_dir
+
 
 def cleanup_scratch_files():
-    files = glob('/home/ethan/Dropbox/org_files/xscratch*.org')
+    files = glob(org_dir + 'xscratch*.org')
     now = datetime.now()
     _delta = timedelta(days=7)
     delete_count = 0
@@ -25,7 +27,7 @@ def cleanup_scratch_files():
     print 'remaining %s' % remain_count
     print 'removed %s' % delete_count
 
-    with open('/home/ethan/scratchy.log', 'a') as f:
+    with open(os.getenv('HOME') + '/scratchy.log', 'a') as f:
         f.write('Last run: %s\nFiles removed: %d'
                 '\nFiles remaining: %d\n\n' % (now, delete_count, remain_count))
 
