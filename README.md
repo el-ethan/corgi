@@ -23,7 +23,9 @@ datetime.datetime(2016, 4, 27, 11, 30)
 ## Dependencies
 
 To use Corgi you will need to install:
-1. The development version of [Kivy](kivy.org) which allows you to use basic Emacs keybindings in Kivy widgets. Instructions for how to install the development version can be found [here](https://kivy.org/docs/installation/installation.html#development-version)
+
+1. The development version of [Kivy](https://kivy.org) which allows you to use basic Emacs keybindings in Kivy widgets. Instructions for how to install the development version can be found [here](https://kivy.org/docs/installation/installation.html#development-version)
+
 2. The `psutil` package, which can be installed with pip: `pip install psutil`; or with `apt`: `sudo apt-get install python-psutil`.
 
 ## Setting up Corgi
