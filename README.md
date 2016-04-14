@@ -38,7 +38,9 @@ The first thing you will need to do is fill in some values in the `.corgi` confi
 * `corgi_home` under `[paths]`: the location where where your `taskpaper` files and sync file (the file your tasks will initially go to when you capture from a mobile device or from the Corgi UI.
 * `org_file` under `[paths]`: the location of the `.org` file where you keep your tasks
 
-After running Corgi's `setup.py` file, you will need to bind the `runcorgi.sh` script to a global key combination so that the app can be triggered from anywhere on your computer. On Ubuntu this can be done as follows:
+You also need to make sure the `runcorgi.sh` script knows about your installation of the development version of Kivy, so you will need to change the `KIVYPATH` variable in `runcorgi.sh` so that it points to that installation.
+
+You will then need to bind the `runcorgi.sh` script to a global key combination so that the app can be triggered from anywhere on your computer. On Ubuntu this can be done as follows:
 
 1. Go to **System Settings**, click on the **Keyboard** icon, and then select the **Shortcuts** tab.
 2. Select **Custom Shortcuts** and then hit the **+** symbol to add a new keyboard shortcut.
