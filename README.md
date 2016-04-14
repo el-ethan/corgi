@@ -21,8 +21,13 @@ Corgi also includes several helpful functions for parsing various aspects of a `
 
 ## Setting up Corgi
 
+The first thing you will need to do is fill in some values in the `.corgi` configuration file. At the minimum, you should enter a values for:
+
+* `corgi_home` under `[paths]`: the location where where your `taskpaper` files and sync file (the file your tasks will initially go to when you capture from a mobile device or from the Corgi UI.
+* `org_file` under `[paths]`: the location of the `.org` file where you keep your tasks
+
 After running Corgi's `setup.py` file, you will need to bind the `runcorgi.sh` script to a global key combination so that the app can be triggered from anywhere on your computer. On Ubuntu this can be done as follows:
 
 1. Go to **System Settings**, click on the **Keyboard** icon, and then select the **Shortcuts** tab.
 2. Select **Custom Shortcuts** and then hit the **+** symbol to add a new keyboard shortcut.
-3. For the name enter **Corgi** or whatever you want, and for the command enter the full path the `runcorgi.sh` script.
+3. For the name, enter **Corgi** or whatever you want, and for the command, enter the full path the `runcorgi.sh` script.

@@ -12,14 +12,13 @@ time_fmt = config.get('formats', 'time')
 # Any tags in this list will not show up in mobile task list
 filter_tags = config.get('tags', 'ignore').split(',')
 
-# This is where tasks are initially added from mobile and corgi capture
-sync_file = config.get('files', 'sync')
 # This is the file tasks are synced to and from from
-org_file = config.get('files', 'org')
-# This is the file where mobile tasks show up
-taskpaper_file = config.get('files', 'taskpaper')
+org_file = config.get('paths', 'org_file')
 
 corgi_home = config.get('paths', 'corgi_home')
+
+# This is where tasks are initially added from mobile and corgi capture
+sync_file = os.path.join(corgi_home, 'to_sync.txt')
 
 prefixes = {
     'level1': '* TODO ',

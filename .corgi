@@ -1,14 +1,7 @@
 [paths]
 
-home =
-work =
 corgi_home = /home/ethan/Dropbox/corgi/
-
-[files]
-
-sync = /home/ethan/Dropbox/corgi/to_sync.txt
-org = /home/ethan/Dropbox/org_files/da_guai.org
-taskpaper =
+org_file = /home/ethan/Dropbox/org_files/da_guai.org
 
 [formats]
 
