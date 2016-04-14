@@ -12,12 +12,14 @@ Corgi allows you to:
 
 Corgi also includes several helpful functions for parsing various aspects of a `.org` file. For example, there are functions to convert between Python `datetime` objects and `org-mode` timestamps:
 
-	>>> from corgi.parse import org_timestamp_to_dt, dt_to_org_timestamp
-	>>> dt = org_timestamp_to_dt('<2016-04-27 Wed 11:30>')
-	>>> dt
-	datetime.datetime(2016, 4, 27, 11, 30)
-	>>> dt_to_org_timestamp(dt)
-	'<2016-04-27 Wed 11:30>'
+```python
+>>> from corgi.parse import org_timestamp_to_dt, dt_to_org_timestamp
+>>> dt = org_timestamp_to_dt('<2016-04-27 Wed 11:30>')
+>>> dt
+datetime.datetime(2016, 4, 27, 11, 30)
+>>> dt_to_org_timestamp(dt)
+'<2016-04-27 Wed 11:30>'
+```
 
 ## Setting up Corgi
 
