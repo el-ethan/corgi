@@ -1,5 +1,8 @@
 # Corgi: Capture Org Instantly
 
+### DISCLAIMER:
+Corgi is a package developed for my specific needs and to work with my specific workflow. I am in the process of making it easy for others to set up and use, but currently much of the code is still specific to my setup, and my take quite a bit of tooling to get it to work with your setup.
+
 ## What Corgi does
 
 Corgi allows you to:
