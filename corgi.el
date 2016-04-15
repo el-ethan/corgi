@@ -5,13 +5,17 @@
 (defvar corgi-org-file (file-name-nondirectory corgi-org-file-path)
     "Name of org file")
 
+(defvar corgi-working-directory
+  (if load-file-name
+      (file-name-directory load-file-name)
+      default-directory))
+
 (defun corgi-sync-to-taskpaper ()
-  "Sync org file to taskpaper file for mobile access"
-  (when (file-equal-p buffer-file-name corgi-org-file-path)
-    (shell-command "./runcorgi.sh taskpapersync")))
+    "Sync org file to taskpaper file for mobile access"
+    (shell-command (concat corgi-working-directory "runcorgi.sh taskpapersync")))
 
 (defun corgi-sync-to-org-command ()
-    (message (shell-command-to-string "./runcorgi.sh orgsync")))
+    (message (shell-command-to-string (concat corgi-working-directory "runcorgi.sh orgsync"))))
 
 (defun corgi-sync-to-org-initially ()
   "Sync org file with to_sync.txt from corgi capture and mobile capture"
@@ -33,5 +37,6 @@
   (org-agenda)
 )
 
-(add-hook 'after-save-hook #'corgi-sync-to-taskpaper)
+(advice-add 'org-agenda-quit :after #'corgi-sync-to-taskpaper)
+
 (add-hook 'after-init-hook #'corgi-sync-to-org-initially)
