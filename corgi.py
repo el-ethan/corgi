@@ -139,8 +139,11 @@ if __name__ == '__main__':
         Logger.warning('CorgiCapture: ***MORE THAN ONE SYNC FILE EXISTS, '
                        'RESOLVE MANUALLY***')
 
+    if not os.path.exists(corgi_home):
+        os.makedirs(corgi_home)
+
     if not os.path.isfile(sync_file):
-        with open(sync_file, 'w') as f:
+        with open(sync_file, 'w+') as f:
             f.write('')
 
     c = CorgiCapture()
