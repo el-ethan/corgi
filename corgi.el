@@ -12,8 +12,10 @@
 
 (defun corgi-sync-to-taskpaper ()
     "Sync org file to taskpaper file for mobile access"
-    (switch-to-buffer (get-buffer corgi-org-file))
-    (save-buffer)
+    (let ((taskfile (get-buffer corgi-org-file)))
+        (when taskfile
+            (switch-to-buffer taskfile)
+            (save-buffer)))
     (shell-command (concat corgi-working-directory "runcorgi.sh taskpapersync")))
 
 (defun corgi-sync-to-org-command ()
