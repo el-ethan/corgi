@@ -67,7 +67,6 @@ class CorgiCapture(object):
         """If conditions are right, copy tasks from sync_file to org_file
         and remove contents of sync_file afterwards.
         """
-
         if self.tasks_to_send and self.running_emacs_count <= 1:
             how_many_tasks = len(self.tasks_to_send)
             with open(org_file, 'a') as org_f:
@@ -144,11 +143,6 @@ class CorgiApp(App):
 
 
 if __name__ == '__main__':
-    from glob import glob
-
-    if len(glob(corgi_home + 'to_sync*')) > 1:
-        Logger.warning('CorgiCapture: ***MORE THAN ONE SYNC FILE EXISTS, '
-                       'RESOLVE MANUALLY***')
 
     if not os.path.exists(corgi_home):
         os.makedirs(corgi_home)
