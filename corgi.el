@@ -1,5 +1,6 @@
 (defvar corgi-org-file-path
-    (shell-command-to-string "python -c \"from config import org_file; print org_file\"")
+    (let ((default-directory (file-name-directory load-file-name)))
+        (shell-command-to-string "python -c \"from config import org_file; print org_file\""))
     "Path to org file retrieved from python config file")
 
 (defvar corgi-org-file (file-name-nondirectory corgi-org-file-path)
@@ -38,8 +39,7 @@
 (defun corgi-org-agenda ()
   (interactive)
   (corgi-sync-to-org)
-  (org-agenda)
-)
+  (org-agenda))
 
 (advice-add 'org-agenda-quit :after #'corgi-sync-to-taskpaper)
 
