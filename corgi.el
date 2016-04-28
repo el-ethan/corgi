@@ -3,7 +3,14 @@
         (shell-command-to-string "python -c \"from config import org_file; print org_file\""))
     "Path to org file retrieved from python config file")
 
-(defvar corgi-org-file (file-name-nondirectory corgi-org-file-path)
+(defun corgi-string-trim-final-newline (string)
+  (let ((len (length string)))
+    (cond
+      ((and (> len 0) (eql (aref string (- len 1)) ?\n))
+       (substring string 0 (- len 1)))
+      (t string))))
+
+(defvar corgi-org-file (file-name-nondirectory (corgi-string-trim-final-newline corgi-org-file-path))
     "Name of org file")
 
 (defvar corgi-working-directory
