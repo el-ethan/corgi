@@ -23,7 +23,6 @@ from kivy.app import App
 from kivy.config import Config
 from kivy.logger import Logger
 from kivy.properties import ObjectProperty
-from kivy.uix.behaviors import CodeNavigationBehavior
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.textinput import TextInput
 
@@ -32,10 +31,14 @@ from config import corgi_home, sync_file, org_file, default_prefix
 
 # Installed version of Kivy may not yet have EmacsBehavior. Prepare for worst.
 try:
-    from kivy.uix.behaviors import EmacsBehavior
-    _emacs = True
+    from kivy.uix.behaviors import EmacsBehavior, CodeNavigationBehavior
+
+    class InputBase(EmacsBehavior, CodeNavigationBehavior):
+        pass
+
+    _dev = True
 except ImportError:
-    _emacs = False
+    _dev = False
 
 
 class CorgiCapture(object):
@@ -109,11 +112,7 @@ class CaptureBox(BoxLayout):
         self.corgi.sync_to_org()
 
 
-class InputBase(EmacsBehavior, CodeNavigationBehavior):
-    pass
-
-
-class CaptureInput(InputBase if _emacs else CodeNavigationBehavior, TextInput):
+class CaptureInput(InputBase if _dev else TextInput):
     """Modified TextInput. Text is submitted on enter and app is stopped.
     If enter modified by shift key, text is submitted, and widget is cleared
     for the next entry.
