@@ -18,7 +18,6 @@ image credit: http://cyodee.deviantart.com/art/Pixel-Frida-421834726
 """
 import os
 import sys
-import psutil
 
 from kivy.app import App
 from kivy.config import Config
@@ -44,7 +43,12 @@ class CorgiCapture(object):
     @property
     def running_emacs_count(self):
         """Count how many instances of Emacs are currently open"""
-        return [psutil.Process(p).name() for p in psutil.pids()].count('emacs')
+        try:
+            import psutil
+            return [psutil.Process(p).name() for p in psutil.pids()].count('emacs')
+        except ImportError:
+            Logger.warning('Cannot determine how many instances of Emacs are running. This may cause sync issues')
+            return 0
 
     @property
     def tasks_to_send(self):
