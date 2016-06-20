@@ -79,6 +79,7 @@ class CorgiCapture(object):
             with open(org_file, 'a') as org_f:
                 for task in self.tasks_to_send:
                     org_f.write(default_prefix + task + '\n')
+                    Logger.info('CorgiCapture: synced task: %s' % task)
             assert self.confirm_sent
             with open(sync_file, 'w+') as f:
                 f.write('')
